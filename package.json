@@ -1,0 +1,11 @@
+{
+  "name": "a2zweb-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Google Apps Script backend for A2Z Tec Solutions website integrations",
+  "scripts": {
+    "lint": "node scripts/validate.js",
+    "check": "npm run lint"
+  },
+  "devDependencies": {}
+}
