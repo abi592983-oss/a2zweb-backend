@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    *{box-sizing:border-box}body{margin:0;font:15px system-ui;background:#08100c;color:#e9f2ec}
+    header{padding:20px 24px;border-bottom:1px solid #203329;display:flex;justify-content:space-between}
+    main{max-width:900px;margin:auto;padding:28px 20px}.card{background:#101b15;border:1px solid #263a2f;border-radius:14px;padding:22px}
+    h1,h2{margin:0 0 18px}.muted{color:#9eb0a5}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    label{display:block;color:#b9c8bf;margin-bottom:6px}input,select{width:100%;background:#09110d;color:#fff;border:1px solid #385044;border-radius:9px;padding:11px}
+    button{margin-top:20px;background:#e8f2eb;color:#0b130e;border:0;border-radius:9px;padding:11px 18px;font-weight:700;cursor:pointer}
+    .stats{display:flex;gap:24px;margin:18px 0}.stat b{display:block;font-size:22px}.status{margin-top:14px;min-height:22px}
+    @media(max-width:620px){.grid{grid-template-columns:1fr}.stats{flex-direction:column;gap:8px}}
+  </style>
+</head>
+<body>
+<header><strong>A2Z Web Backend</strong><span id="user" class="muted">Checking…</span></header>
+<main>
+  <div class="card">
+    <h2>Token configuration</h2>
+    <p class="muted">Human-facing token numbers. Internal request IDs remain unchanged.</p>
+    <div class="stats">
+      <div class="stat"><span class="muted">Current</span><b id="current">—</b></div>
+      <div class="stat"><span class="muted">Next</span><b id="preview">—</b></div>
+      <div class="stat"><span class="muted">Remaining</span><b id="remaining">—</b></div>
+    </div>
+    <div class="grid">
+      <div><label>Prefix</label><input id="prefix" maxlength="16"></div>
+      <div><label>Padding</label><input id="padding" type="number" min="1" max="12"></div>
+      <div><label>Starting number</label><input id="start" type="number" min="0"></div>
+      <div><label>Ending number</label><input id="end" type="number" min="0"></div>
+      <div><label>Reset policy</label><select id="reset"><option value="never">Never</option><option value="daily">Daily</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+    </div>
+    <button id="save" onclick="save()">Save configuration</button>
+    <div id="status" class="status muted"></div>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function error(e){$('status').textContent=(e&&e.message)||'Request failed.';$('save').disabled=false}
+function render(d){$('user').textContent=d.email;$('prefix').value=d.token.config.prefix;$('start').value=d.token.config.start;$('end').value=d.token.config.end;$('padding').value=d.token.config.padding;$('reset').value=d.token.config.reset;$('current').textContent=d.token.current===null?'Not issued':d.token.current;$('preview').textContent=d.token.nextPreview;$('remaining').textContent=d.token.remaining;$('save').disabled=false}
+function save(){$('save').disabled=true;$('status').textContent='Saving…';const p={prefix:$('prefix').value,start:Number($('start').value),end:Number($('end').value),padding:Number($('padding').value),reset:$('reset').value};google.script.run.withSuccessHandler(d=>{render(d);$('status').textContent='Saved.'}).withFailureHandler(error).adminSaveTokenConfig(p)}
+google.script.run.withSuccessHandler(render).withFailureHandler(error).adminGetDashboard();
+</script>
+</body>
+</html>
