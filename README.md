@@ -50,3 +50,21 @@ npm run check
 ## Next architecture step
 
 After migration is verified against the existing deployment, the backend can be split into modules and upgraded to support multiple forms, multiple ERP consumers, destination-scoped ACK state, and configuration-driven routing.
+
+
+## Admin security and token UI
+
+Admin access is deny-by-default. Set the Script Property `A2Z_ADMIN_EMAILS` to a comma-separated list of explicitly authorized Google account email addresses.
+
+The admin UI is served with `?admin=1`, but authorization is enforced again inside every admin server function. Do not rely on the UI route itself for security.
+
+For reliable Google identity, use a separate admin web-app deployment configured to run as **User accessing the web app** and require a signed-in Google user. Keep the public booking deployment separate so anonymous website submissions continue to work.
+
+Token configuration is runtime state stored in Script Properties:
+- `A2Z_TOKEN_PREFIX`
+- `A2Z_TOKEN_START`
+- `A2Z_TOKEN_END`
+- `A2Z_TOKEN_PADDING`
+- `A2Z_TOKEN_RESET`
+
+Booking tokens are human-facing references only. The website request UUID and Google Form response ID remain the immutable internal identities.
